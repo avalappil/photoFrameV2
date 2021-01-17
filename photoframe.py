@@ -6,12 +6,13 @@ from datetime import datetime
 import os, fnmatch
 import pygame
 from pygame.locals import *
-import json
-import serial
+import maestro
+import time
 
 
-#path = '/home/pi/mirror'
-path = '.'
+
+path = '/home/pi/photoFrameV2'
+#path = '.'
 picPath = path + '/wallpaper/'
 fotoframe = "./frame.jpg"
 images = {}
@@ -22,9 +23,17 @@ minTemp = 0
 maxTemp = 0
 tempDesc = ''
 icon = ''
-rotate = 90
-mode = 'a'
+rotate = 270
+mode = ''
 
+if (mode == ''):
+   servo = maestro.Controller()
+
+def move(ac, speed, target):
+    servo.setAccel(0, ac)
+    servo.setSpeed(0, speed)
+    servo.setTarget(0, target)
+    
 def readImages():
    listOfFiles = os.listdir(picPath) 
    pattern = "*.jpg"   
@@ -37,7 +46,6 @@ def readImages():
           maxImageCount += 1
 
 def input(events):
-    global ser
     for event in events:
         if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
             pygame.mouse.set_visible(True)
@@ -61,14 +69,10 @@ def process():
        try:
           print (images)
           pic = pygame.image.load(images[imageIndexCount])
-          frame = pygame.image.load(fotoframe)
        except:
           print ("This is an error message!")
 
        imageIndexCount += 1
-       #calculate the orientation
-       FW = frame.get_width()
-       FH = frame.get_height()
        W = pic.get_width()
        H = pic.get_height()
        print (H)
@@ -78,27 +82,12 @@ def process():
            imageOrientation = 1
            W = pic.get_width()
            H = pic.get_height()
-           FW = frame.get_width()
-           FH = frame.get_height()
            screen.fill((0,0,0))
        else:
            imageOrientation = 0
            screen.fill((0,0,0))
-       #calculate the scaling ratios
        ws = 0
        wh = 0
-       if imageOrientation == 0:
-           ws=305
-           wh=198
-       else:
-           ws=305
-           wh=198
-
-       frw = int(w)/FW
-       frh = int(h)/FH    
-       frame = pygame.transform.smoothscale(frame, (int(FW*frw), int(FH*frh)))
-       fwidth = int(FW*frw)
-       fheight = int(FH*frh)
        
        rw = int(w - ws)/W
        rh = int(h - wh)/H
@@ -107,15 +96,14 @@ def process():
        height = int(H*rh)
        
        # display the photo
-       screen.blit(frame, (int((int(w)-fwidth)/2), int((int(h)-fheight)/2)))
        screen.blit(pic, (int((int(w - ws)-int(width - ws))/2), int((int(h - wh)-int(height - wh))/2)))
 
        if (imageOrientation == 0):
         if (mode == ''):
-          ser.write(bytearray('h\n', 'UTF-8'))
+          move(25, 10, 6000)
        else:
         if (mode == ''):
-          ser.write(bytearray('v\n', 'UTF-8'))
+          move(25, 10, 1200)
       
        pygame.display.flip()
        time.sleep(5)
@@ -132,7 +120,7 @@ if __name__ == '__main__':
    (w, h) = (screen.get_width(), screen.get_height())
    flags = screen.get_flags()
    bits = screen.get_bitsize()
-   screen = pygame.display.set_mode((w, h), flags, bits)
+   screen = pygame.display.set_mode((w, h), flags ^ FULLSCREEN, bits)
    screen.blit(tmp, (0, 0))
    pygame.key.set_mods(0)
    (w, h) = (screen.get_width(), screen.get_height())
@@ -141,8 +129,7 @@ if __name__ == '__main__':
 
    #serial setup
    if (mode == ''):
-      ser = serial.Serial('/dev/ttyACM0', baudrate = 9600, xonxoff = False, rtscts = False, dsrdtr = False)
-      path = '/home/pi/mirror'
+      path = '/home/pi/photoFrameV2'
    else:
       path = '.'
    picPath = path + '/wallpaper/'
