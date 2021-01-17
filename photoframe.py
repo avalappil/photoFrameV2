@@ -96,7 +96,7 @@ def process():
        height = int(H*rh)
        
        # display the photo
-       screen.blit(pic, (int((int(w - ws)-int(width - ws))/2), int((int(h - wh)-int(height - wh))/2)))
+       
 
        if (imageOrientation == 0):
         if (mode == ''):
@@ -104,7 +104,7 @@ def process():
        else:
         if (mode == ''):
           move(25, 10, 1200)
-      
+       screen.blit(pic, (int((int(w - ws)-int(width - ws))/2), int((int(h - wh)-int(height - wh))/2)))
        pygame.display.flip()
        time.sleep(5)
 
