@@ -10,8 +10,6 @@ from pygame.locals import *
 import maestro
 import time
 
-
-
 path = '/home/pi/photoFrameV2'
 #path = '.'
 picPath = '/media/pi/PHOTOVIEWER/'
@@ -26,7 +24,7 @@ tempDesc = ''
 icon = ''
 rotate = 270
 mode = ''
-
+time.sleep(60)
 if (mode == ''):
    servo = maestro.Controller()
 
