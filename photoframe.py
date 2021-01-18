@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
 import time
@@ -13,7 +14,7 @@ import time
 
 path = '/home/pi/photoFrameV2'
 #path = '.'
-picPath = path + '/wallpaper/'
+picPath = '/media/pi/PHOTOVIEWER/'
 fotoframe = "./frame.jpg"
 images = {}
 maxImageCount = 0
@@ -132,6 +133,6 @@ if __name__ == '__main__':
       path = '/home/pi/photoFrameV2'
    else:
       path = '.'
-   picPath = path + '/wallpaper/'
+   picPath = '/media/pi/PHOTOVIEWER/'
    readImages()
    process()
