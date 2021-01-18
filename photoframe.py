@@ -22,16 +22,20 @@ minTemp = 0
 maxTemp = 0
 tempDesc = ''
 icon = ''
-rotate = 270
+rotate = 90
 mode = ''
-time.sleep(60)
-if (mode == ''):
-   servo = maestro.Controller()
+prevImageOrientation = 0
 
 def move(ac, speed, target):
     servo.setAccel(0, ac)
     servo.setSpeed(0, speed)
     servo.setTarget(0, target)
+
+if (mode == ''):
+   servo = maestro.Controller()
+   prevImageOrientation = 0
+   move(25, 5, 2680)
+   time.sleep(60)
     
 def readImages():
    listOfFiles = os.listdir(picPath) 
@@ -54,6 +58,7 @@ def input(events):
 def process():
    global mode
    global fotoframe
+   global prevImageOrientation
    imageIndexCount = 0
    while True:
        #check for keyboard interupt
@@ -99,10 +104,18 @@ def process():
 
        if (imageOrientation == 0):
         if (mode == ''):
-          move(25, 10, 6000)
+           if (prevImageOrientation == 1):
+              pygame.display.update()
+              prevImageOrientation = 0
+           move(25, 5, 2680)
+           time.sleep(8)
        else:
         if (mode == ''):
-          move(25, 10, 1200)
+           if (prevImageOrientation == 0):
+              pygame.display.update()
+              prevImageOrientation = 1
+           move(25, 5, 6350)
+           time.sleep(8)
        screen.blit(pic, (int((int(w - ws)-int(width - ws))/2), int((int(h - wh)-int(height - wh))/2)))
        pygame.display.flip()
        time.sleep(5)
